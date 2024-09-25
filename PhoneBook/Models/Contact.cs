@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace PhoneBook.Models
 {
@@ -12,5 +13,9 @@ namespace PhoneBook.Models
         public string Email {  get; set; }
         [Required]
         public string PhoneNumber { get; set; }
+
+        [DefaultValue("General")]
+        public string? Category { get; set; } = "General";
+
     }
 }
