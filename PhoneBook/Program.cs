@@ -1,7 +1,10 @@
-﻿public class Program
+﻿using PhoneBook;
+
+public class Program
 {
     public static void Main()
     {
-        Console.WriteLine("Hello");
+        UserInput userInput = new ();
+        userInput.MainMenuChoice();
     }
 }
