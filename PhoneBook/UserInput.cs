@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
+using System.Configuration;
 
 namespace PhoneBook
 {
@@ -33,19 +34,29 @@ namespace PhoneBook
 
         }
 
+        internal int ViewMenuChoice()
+        {
+            string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                            .Title("[blue]VIEW CONTACTS[/]")
+                            .PageSize(3)
+                            .AddChoices(new[]
+                            {
+                                "[springgreen2]1. View All Contacts[/]", "[springgreen2]2. View Contact By Category[/]", "[red]3. Back to Main Menu[/]"
+                            }));
+            return int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
+        }
+
         internal int UpdateMenuChoice()
         {
             string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                .Title("[blue]UPDATE MENU[/]")
+                .Title("[blue]UPDATE CONTACTS[/]")
                 .PageSize(5)
                 .AddChoices(new[]
                 {
                     "[springgreen2]1. Update Contact Name[/]", "[springgreen2]2. Update Contact Number[/]", "[springgreen2]3. Update Email Id[/]","[springgreen2]4. Update Category[/]","[red]5. Back to Main Menu[/]"
                 }));
 
-            int opt = int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
-
-            return opt;
+            return int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
         }
 
         internal string GetEmail()
@@ -108,6 +119,21 @@ namespace PhoneBook
             return name.Substring(0, 1).ToUpper() + name.Substring(1);  
         }
 
-        
+        internal string CategoryMenu(List<(string, int)> categoryCount)
+        {
+            List<string> optionsList = new ();
+            string choice = "";
+            foreach (var category in categoryCount)
+            {
+                optionsList.Add($"{category.Item1}: {category.Item2} contacts");
+            }
+            int pageSize = optionsList.Count < 3 ? 3 : optionsList.Count;
+            choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                            .PageSize(pageSize)
+                            .AddChoices(optionsList));
+            
+
+             return choice.Substring(0, choice.IndexOf(':'));
+        }
     }
 }

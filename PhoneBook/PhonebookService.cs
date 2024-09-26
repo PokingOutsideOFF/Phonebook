@@ -11,6 +11,8 @@ namespace PhoneBook
             PhonebookRepositiory repo = new();
             Validation validation = new();
 
+            int choice;
+
             switch (opt)
             {
                 case 1:
@@ -20,16 +22,37 @@ namespace PhoneBook
                     string number = userInput.GetNumber();
                     Console.Write("Enter Contact email: ");
                     string email = userInput.GetEmail();
-                    repo.AddContact(name, number, email);
+                    string category = null;
+                    Console.Write("Press (y/Y) to add to category?: ");
+                    if(Console.ReadLine().Substring(0, 1).ToLower() == "y")
+                    {
+                        Console.Write("Enter category: ");
+                        category = Console.ReadLine();
+
+                    }
+                    repo.AddContact(name, number, email, category);
                     break;
 
                 case 2:
-                    repo.ViewContacts();
+                    choice = userInput.ViewMenuChoice();
+                    if (choice == 3) return;
+
+                    switch (choice)
+                    {
+                        case 1:
+                            repo.ViewContacts();
+                            break;
+                        case 2:
+                            var categories = repo.GetCategories();
+                            category = userInput.CategoryMenu(categories);
+                            repo.ViewContacts(category);
+                            break;
+                    }
                     break;
 
                 case 3:
 
-                    int choice = userInput.UpdateMenuChoice();
+                    choice = userInput.UpdateMenuChoice();
 
                     if (choice == 5) return;
 
@@ -80,7 +103,7 @@ namespace PhoneBook
                             repo.GetCurrentValue(id, updateColumn);
 
                             Console.Write("Enter new contact category: ");
-                            string category = Console.ReadLine();
+                            category = Console.ReadLine();
                             validation.IsValidName(category);
                             repo.UpdateContacts(id, category, updateColumn);
                             break;

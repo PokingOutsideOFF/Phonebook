@@ -7,6 +7,7 @@ namespace PhoneBook.Models
     {
         [Key]
         public int Id { get; set; }
+        public int TempId {  get; set; }
         [Required]
         public string Name { get; set; }
         [Required]

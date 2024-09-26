@@ -9,13 +9,17 @@ namespace PhoneBook
     {
         PhonebookContext _context = new();
 
-        public void AddContact(string name, string number, string email)
+        public void AddContact(string name, string number, string email, string category)
         {
+            int maxNumber = _context.Contact.Max(c => (int?) c.TempId) ?? 0;
+            
             Contact contact = new Contact
             {
                 Name = name,
                 Email = email,
-                PhoneNumber = number
+                PhoneNumber = number,
+                Category = category == null ? "General": category.Substring(0, 1).ToUpper() + category.Substring(1).ToLower(),
+                TempId = maxNumber + 1
             };
              
             _context.Add(contact);
@@ -23,9 +27,9 @@ namespace PhoneBook
             AnsiConsole.Markup("[blue]Contact added[/]\n\n");
         }
 
-        internal void ViewContacts()
+        internal void ViewContacts(string category = "null")
         {
-            var entities = _context.Contact.ToList();
+            var entities = category == "null" ? _context.Contact.ToList() : _context.Contact.Where(c => c.Category == category).ToList(); ;
 
             if (entities.Count == 0)
             {
@@ -41,7 +45,7 @@ namespace PhoneBook
             AnsiConsole.Markup("[blue]Phone Book[/]\n");
             foreach (var entity in entities)
             {
-                int id = entity.Id; 
+                int id = entity.TempId; 
                 string name = entity.Name;
                 string email = entity.Email;
                 string number = entity.PhoneNumber;
@@ -58,18 +62,28 @@ namespace PhoneBook
 
         public void DeleteContact(int id)
         {
-            var entity = _context.Contact.FirstOrDefault(x => x.Id == id);
+            var entity = _context.Contact.FirstOrDefault(x => x.TempId == id);
           
             _context.Remove(entity);
             _context.SaveChanges();
-            AnsiConsole.Markup("[blue]Contact deleted[/]\n");
+
+            var rowsToBeUpdated = _context.Contact.Where(x => x.TempId > id).ToList();
+
+            foreach (var row in rowsToBeUpdated)
+            {
+                row.TempId -= 1;
+            }
+            
+            _context.SaveChanges();
+
+            AnsiConsole.Markup("[blue]Contact deleted[/]\n\n");
 
             ViewContacts();
         }
 
         public void UpdateContacts(int id, string updateValue, string updateColumn)
         {
-            var entity = _context.Contact.FirstOrDefault(x=> x.Id == id);
+            var entity = _context.Contact.FirstOrDefault(x=> x.TempId == id);
 
             if (updateColumn == "Name")
             {
@@ -99,7 +113,7 @@ namespace PhoneBook
 
         internal bool CheckIdExists(int id)
         {
-            var entity = _context.Contact.FirstOrDefault(x => x.Id == id);
+            var entity = _context.Contact.FirstOrDefault(x => x.TempId == id);
             if (entity == null)
             {
                 return false;
@@ -110,11 +124,26 @@ namespace PhoneBook
         internal void GetCurrentValue(int id, string updateColumn)
         {
             var entity = _context.Contact
-                    .Where(c => c.Id == id)
+                    .Where(c => c.TempId == id)
                     .Select(c => EF.Property<string>(c, updateColumn))
                     .FirstOrDefault();
 
             Console.WriteLine("Current value: " + entity);
         }
+
+        internal List<(string, int)> GetCategories()
+        {
+            var entities = _context.Contact.
+                            GroupBy(c => c.Category).
+                            Select(g => new
+                            {
+                                Category = g.Key,
+                                Count = g.Count()
+                            }).ToList();
+           
+            return entities.Select(e => (e.Category, e.Count)).ToList();
+        }
+
+        
     }
 }
