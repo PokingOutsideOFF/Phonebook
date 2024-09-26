@@ -38,20 +38,20 @@ namespace PhoneBook
             }
 
             Table table = new Table();
-            table.AddColumn("Id");
-            table.AddColumn("Name");
-            table.AddColumn("Contact Number");
-            table.AddColumn("Email ID");
+            table.AddColumn("[gold1 bold]Id[/]");
+            table.AddColumn("[gold1 bold]Name[/]");
+            table.AddColumn("[gold1 bold]Contact Number[/]");
+            table.AddColumn("[gold1 bold]Email ID[/]");
             AnsiConsole.Markup("[blue]Phone Book[/]\n");
             foreach (var entity in entities)
             {
-                int id = entity.TempId; 
-                string name = entity.Name;
-                string email = entity.Email;
-                string number = entity.PhoneNumber;
+                string id = $"[seagreen1]{entity.TempId}[/]"; 
+                string name = $"[seagreen1]{entity.Name}[/]";
+                string email = $"[seagreen1]{entity.Email}[/]";
+                string number = $"[seagreen1]{entity.PhoneNumber}[/]";
 
                 table.AddRow(
-                    id.ToString(), name, number, email
+                    id, name, number, email
                     );
             }
 
@@ -144,6 +144,10 @@ namespace PhoneBook
             return entities.Select(e => (e.Category, e.Count)).ToList();
         }
 
-        
+        internal string GetEmail(int id)
+        {
+            var entity = _context.Contact.Where(c => c.TempId == id).Select(c => c.Email).FirstOrDefault();
+            return entity.ToString();
+        }
     }
 }

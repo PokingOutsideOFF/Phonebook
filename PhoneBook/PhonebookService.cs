@@ -1,9 +1,17 @@
-﻿using Spectre.Console;
+﻿using Microsoft.Extensions.Configuration;
+using Spectre.Console;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PhoneBook
 {
     public class PhonebookService
     {
+        static IConfiguration configuration = ConfigurationHelper.BuildConfiguration();
+        static string senderEmail = configuration["SENDER_EMAIL"];
+        static string password = configuration["PASSWORD"];
+
         public static void PerformOperation(int opt)
         {
             Console.Clear();
@@ -62,7 +70,7 @@ namespace PhoneBook
                     int id = userInput.GetId();
                     if (!repo.CheckIdExists(id))
                     {
-                        AnsiConsole.Markup("[red]Phone Id doesn't exist. Returning to Main Menu....[/]\n");
+                        AnsiConsole.Markup("[red]Contact Id doesn't exist. Returning to Main Menu....[/]\n");
                         Thread.Sleep(1000);
                         Console.Clear();
                         return;
@@ -117,7 +125,7 @@ namespace PhoneBook
 
                     if (!repo.CheckIdExists(id))
                     {
-                        AnsiConsole.Markup("[red]Phone Id doesn't exist. Returning to Main Menu....[/]\n");
+                        AnsiConsole.Markup("[red]Contact Id doesn't exist. Returning to Main Menu....[/]\n");
                         Thread.Sleep(1000);
                         Console.Clear();
                         return;
@@ -125,12 +133,58 @@ namespace PhoneBook
 
                     repo.DeleteContact(id);
                     break;
+
+                case 5:
+                    repo.ViewContacts();
+                    Console.Write("Enter contact id to whom you want to send email: ");
+                    id = userInput.GetId();
+
+                    if (!repo.CheckIdExists(id))
+                    {
+                        AnsiConsole.Markup("[red]Contact Id doesn't exist. Returning to Main Menu....[/]\n");
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        return;
+                    }
+
+                    string receiverEmail = repo.GetEmail(id);
+                    Console.WriteLine("\nEnter subject: ");
+                    string subject = Console.ReadLine();
+
+                    string body = userInput.GetEmailBody();
+                    SendMail(receiverEmail, subject, body);
+
+                    break;
             }
 
             AnsiConsole.Markup("[blue]Press any key to continue[/]");
             Console.ReadLine();
             Console.Clear() ;
             return;
+        }
+
+        private static void SendMail(string receiverEmail, string? subject, string body)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress(senderEmail);
+                mail.To.Add(receiverEmail);
+                mail.Subject = subject;
+                mail.Body = body;
+
+                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+                smtpClient.Credentials = new NetworkCredential(senderEmail, password);
+                smtpClient.EnableSsl = true;
+
+                smtpClient.Send(mail);
+
+                AnsiConsole.Markup("\n[blue]Mail sent successfully[/]\n\n");
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.Markup($"[red]Error sending mail: {ex.Message}[/]\n\n");
+            }
         }
     }
 }

@@ -1,28 +1,28 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Spectre.Console;
-using System.Configuration;
+﻿using Spectre.Console;
+using System.Text;
 
 namespace PhoneBook
 {
     public class UserInput
     {
         Validation validation = new();
+
         public void MainMenuChoice()
         {
             while (true)
             {
                 string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                     .Title("[blue] MAIN MENU[/]")
-                    .PageSize(5)
+                    .PageSize(6)
                     .AddChoices(
                     new[]
                     {
-                    "[springgreen2]1. Add Contact[/]", "[springgreen2]2. View Contacts[/]", "[springgreen2]3. Edit Contact[/]", "[springgreen2]4. Delete Contact[/]", "[red]5. Exit[/]"
+                    "[springgreen2]1. Add Contact[/]", "[springgreen2]2. View Contacts[/]", "[springgreen2]3. Edit Contact[/]", "[springgreen2]4. Delete Contact[/]", "[yellow4]5. Send Email[/]", "[red]6. Exit[/]"
                     }));
 
                 int opt = int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
 
-                if (opt == 5)
+                if (opt == 6)
                 {
                     AnsiConsole.Markup("[red] Exiting ....... [/]");
                     Thread.Sleep(1000);
@@ -49,11 +49,11 @@ namespace PhoneBook
         internal int UpdateMenuChoice()
         {
             string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                .Title("[blue]UPDATE CONTACTS[/]")
+                .Title("[blue]EDIT CONTACTS[/]")
                 .PageSize(5)
                 .AddChoices(new[]
                 {
-                    "[springgreen2]1. Update Contact Name[/]", "[springgreen2]2. Update Contact Number[/]", "[springgreen2]3. Update Email Id[/]","[springgreen2]4. Update Category[/]","[red]5. Back to Main Menu[/]"
+                    "[springgreen2]1. Edit Contact Name[/]", "[springgreen2]2. Edit Contact Number[/]", "[springgreen2]3. Edit Email Id[/]","[springgreen2]4. Edit Category[/]","[red]5. Back to Main Menu[/]"
                 }));
 
             return int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
@@ -64,12 +64,12 @@ namespace PhoneBook
             string email;
             while (true)
             {
-                Console.Write("Enter Contact email: ");
                 email = Console.ReadLine();
                 if (validation.IsValidEmail(email))
                 {
                     break;
                 }
+                Console.Write("Enter Contact email: ");
             }
             return email;
         }
@@ -134,6 +134,19 @@ namespace PhoneBook
             
 
              return choice.Substring(0, choice.IndexOf(':'));
+        }
+
+        internal string GetEmailBody()
+        {
+            StringBuilder sb = new StringBuilder();
+            string line;
+
+            Console.WriteLine("\nEnter your text (type 'END' on a new line to finish):");
+            while ((line = Console.ReadLine()) != "END")
+            {
+                sb.Append(line);
+            }
+            return sb.ToString();
         }
     }
 }
