@@ -149,5 +149,10 @@ namespace PhoneBook
             var entity = _context.Contact.Where(c => c.TempId == id).Select(c => c.Email).FirstOrDefault();
             return entity.ToString();
         }
+
+        internal string GetNumber(int id)
+        {
+            return _context.Contact.Where(c => c.TempId == id).Select(c => c.PhoneNumber).FirstOrDefault();
+        }
     }
 }

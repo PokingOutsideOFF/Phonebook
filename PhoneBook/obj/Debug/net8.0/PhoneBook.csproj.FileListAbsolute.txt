@@ -132,3 +132,5 @@ C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\ne
 C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Abstractions.dll
 C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Physical.dll
 C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\net8.0\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\Lenovo\OneDrive\Desktop\CsharpProjects\PhoneBook\PhoneBook\bin\Debug\net8.0\Twilio.dll

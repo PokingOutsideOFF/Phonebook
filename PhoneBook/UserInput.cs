@@ -13,16 +13,18 @@ namespace PhoneBook
             {
                 string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
                     .Title("[blue] MAIN MENU[/]")
-                    .PageSize(6)
+                    .PageSize(7)
                     .AddChoices(
                     new[]
                     {
-                    "[springgreen2]1. Add Contact[/]", "[springgreen2]2. View Contacts[/]", "[springgreen2]3. Edit Contact[/]", "[springgreen2]4. Delete Contact[/]", "[yellow4]5. Send Email[/]", "[red]6. Exit[/]"
+                    "[springgreen2]1. Add Contact[/]", "[springgreen2]2. View Contacts[/]", 
+                        "[springgreen2]3. Edit Contact[/]", "[springgreen2]4. Delete Contact[/]", 
+                        "[yellow4]5. Send Email[/]", "[yellow4]6. Send SMS[/]", "[red]7. Exit[/]"
                     }));
 
                 int opt = int.Parse(choice.Substring(choice.IndexOf(']') + 1, 1));
 
-                if (opt == 6)
+                if (opt == 7)
                 {
                     AnsiConsole.Markup("[red] Exiting ....... [/]");
                     Thread.Sleep(1000);
@@ -136,7 +138,7 @@ namespace PhoneBook
              return choice.Substring(0, choice.IndexOf(':'));
         }
 
-        internal string GetEmailBody()
+        internal string GetMessage()
         {
             StringBuilder sb = new StringBuilder();
             string line;

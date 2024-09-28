@@ -3,6 +3,10 @@ using Spectre.Console;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace PhoneBook
 {
@@ -11,6 +15,12 @@ namespace PhoneBook
         static IConfiguration configuration = ConfigurationHelper.BuildConfiguration();
         static string senderEmail = configuration["SENDER_EMAIL"];
         static string password = configuration["PASSWORD"];
+
+        static string accountSid = configuration["Twilio_SID"];
+        static string authToken = configuration["Twilio_Auth_Token"];
+        static string senderNumber = configuration["SENDER_NUMBER"];
+        static string countryCode = configuration["COUNTRY_CODE"];
+
 
         public static void PerformOperation(int opt)
         {
@@ -151,8 +161,28 @@ namespace PhoneBook
                     Console.WriteLine("\nEnter subject: ");
                     string subject = Console.ReadLine();
 
-                    string body = userInput.GetEmailBody();
+                    string body = userInput.GetMessage();
                     SendMail(receiverEmail, subject, body);
+                    break;
+
+                case 6:
+                    repo.ViewContacts();
+
+                    Console.Write("Enter contact id to whom you want to send sms: ");
+                    id = userInput.GetId();
+
+                    if (!repo.CheckIdExists(id))
+                    {
+                        AnsiConsole.Markup("[red]Contact Id doesn't exist. Returning to Main Menu....[/]\n");
+                        Thread.Sleep(1000);
+                        Console.Clear();
+                        return;
+                    }
+
+                    string receiverNumber = repo.GetNumber(id);
+         
+                    string message = userInput.GetMessage();
+                    SendSMS(receiverNumber, message);
 
                     break;
             }
@@ -161,6 +191,28 @@ namespace PhoneBook
             Console.ReadLine();
             Console.Clear() ;
             return;
+        }
+
+        private static void SendSMS(string receiverNumber, string message)
+        {
+            try
+            {
+
+
+                TwilioClient.Init(accountSid, authToken);
+
+         
+                var sms = MessageResource.Create(
+                        body: message,
+                        from: new Twilio.Types.PhoneNumber(senderNumber),
+                        to: new Twilio.Types.PhoneNumber(countryCode+receiverNumber));
+
+                AnsiConsole.Markup($"\n[blue]SMS sent Successfully[/]\n\n");
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.Markup($"[red]Error sending sms: {ex.Message}[/]\n\n");
+            }
         }
 
         private static void SendMail(string receiverEmail, string? subject, string body)
