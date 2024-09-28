@@ -8,10 +8,7 @@ namespace PhoneBook
     {
         public DbSet<Contact>? Contact { get; set; }
 
-        private static  string dataSource = Environment.GetEnvironmentVariable("DB_DATASOURCE");
-        private static string connectionString = ConfigurationManager.AppSettings["PhonebookDBConnection"]
-                                  .Replace("{DataSource}", dataSource);
-
+        private string? connectionString = ConfigurationManager.AppSettings.Get("PhonebookDBConnection");
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
